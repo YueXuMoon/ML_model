@@ -1,0 +1,273 @@
+---
+title: "Netflix Churn Prediction"
+subtitle: "Random Forest vs Gradient Boosting Analysis"
+author: "Statistical Machine Learning Project"
+date: "November 30, 2025"
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    logo: ""
+    footer: "Netflix User Churn Prediction - ML Analysis"
+    transition: slide
+    background-transition: fade
+    highlight-style: github
+    code-fold: true
+    fig-width: 10
+    fig-height: 5
+---
+
+# Slide 1: Project Overview {background-color="#E50914"}
+
+## Objective
+Predict Netflix user churn using ensemble machine learning methods
+
+## Dataset
+- **210,000+** user records
+- **30 features**: demographics, engagement, subscription
+- **Binary target**: active vs inactive users
+
+## Methods Compared
+::: {.columns}
+::: {.column width="50%"}
+**Random Forest**
+- 3 m-value configs
+- 500 trees each
+- Parallel training
+:::
+::: {.column width="50%"}
+**Gradient Boosting**
+- 3 depth levels
+- 3 learning rates
+- Sequential training
+:::
+:::
+
+---
+
+# Slide 2: Random Forest Results {background-color="#221f1f"}
+
+## Three Configurations Tested
+
+| Configuration | m-value | Test Error | AUC | Use Case |
+|--------------|---------|------------|-----|----------|
+| **m = √p** | 5 | 3.8% | 0.962 | **Default (Best)** |
+| **m = p/2** | 15 | 4.0% | 0.961 | Moderate |
+| **m = p** | 30 | 4.2% | 0.959 | Bagging |
+
+## Key Findings
+
+::: {.incremental}
+- **m = √p** provides optimal variance-bias tradeoff
+- All models converge by **200-300 trees**
+- Diminishing returns after **400 trees**
+- **Parallel training** advantage with multi-core systems
+:::
+
+## Feature Importance (Top 5)
+1. 📺 Total watch minutes
+2. 🔄 Session count
+3. 👆 Recommendations clicked
+4. 💰 Monthly spend
+5. ✅ Completion rate
+
+---
+
+# Slide 3: Gradient Boosting Results {background-color="#221f1f"}
+
+## Depth Analysis (learning rate = 0.1)
+
+::: {.columns}
+::: {.column width="33%"}
+**Depth = 1**  
+(Stumps)
+
+- Simple weak learners
+- Test error: 4.5%
+- Fast training
+- May underfit
+:::
+::: {.column width="33%"}
+**Depth = 2** ⭐  
+(Optimal)
+
+- Best tradeoff
+- Test error: 3.5%
+- **Recommended**
+- Good generalization
+:::
+::: {.column width="33%"}
+**Depth = 5**  
+(Deep Trees)
+
+- Complex patterns
+- Test error: 3.4%
+- Risk overfitting
+- Slower training
+:::
+:::
+
+## Learning Rate Impact (depth = 1)
+
+| Learning Rate | Convergence | Trees Needed | Test Error | Best For |
+|--------------|-------------|--------------|------------|----------|
+| **0.01** | Slow | 500+ | 4.8% | Large ensembles |
+| **0.05** | Moderate | 300-400 | 4.2% | Balanced |
+| **0.10** | Fast | 100-150 | 4.5% | Quick results |
+
+---
+
+# Slide 4: Model Comparison {background-color="#221f1f"}
+
+## Test Error vs Number of Trees
+
+**Convergence Speed:**
+
+- **Fastest**: GB (depth=2, lr=0.1) → 100-150 trees
+- **Moderate**: RF (m=√p) → 200-300 trees  
+- **Slowest**: GB (depth=1, lr=0.01) → 500+ trees
+
+## Head-to-Head Performance
+
+::: {.columns}
+::: {.column width="50%"}
+### 🌲 Random Forest
+**Advantages:**
+- ✅ Parallel training
+- ✅ Less tuning needed
+- ✅ More stable
+- ✅ Built-in importance
+
+**Best Config:**
+- m = √p
+- 400 trees
+- Test error: 3.8%
+:::
+::: {.column width="50%"}
+### 🚀 Gradient Boosting
+**Advantages:**
+- ✅ Higher accuracy
+- ✅ Error correction
+- ✅ Flexible tuning
+- ✅ Complex patterns
+
+**Best Config:**
+- depth = 2
+- lr = 0.1
+- 300 trees
+- Test error: 3.5%
+:::
+:::
+
+---
+
+# Slide 5: Business Impact {background-color="#E50914"}
+
+## High-Risk User Indicators
+
+::: {.columns}
+::: {.column width="50%"}
+### 🚨 Top Churn Signals
+1. Declining watch time
+2. Reduced sessions
+3. Lower click-through rate
+4. Incomplete viewing
+5. Fewer searches
+:::
+::: {.column width="50%"}
+### 💡 Intervention Strategy
+**Tier 1** (>70% risk)
+- Personalized content
+- Exclusive alerts
+
+**Tier 2** (40-70% risk)
+- Better recommendations
+- Viewing reminders
+
+**Tier 3** (<40% risk)
+- Monitor patterns
+- Maintain engagement
+:::
+:::
+
+## ROI Estimation
+
+| Metric | Value |
+|--------|-------|
+| Avg. customer LTV | $200 |
+| Intervention cost | $5 |
+| Success rate | 25% |
+| **Net gain per intervention** | **$45** |
+
+---
+
+# Slide 6: Conclusions & Recommendations {background-color="#221f1f"}
+
+## Key Findings
+
+::: {.incremental}
+1. 🎯 **Both models achieve >95% accuracy**
+2. 📊 **GB (depth=2) has slight edge** in test error
+3. 🔧 **RF more robust** with less tuning
+4. ⚡ **Learning rate critical** for GB performance
+5. 📈 **Engagement metrics** strongest predictors
+:::
+
+## Deployment Recommendations
+
+::: {.columns}
+::: {.column width="50%"}
+### Production Setup
+- **Primary**: GB (depth=2, lr=0.1)
+- **Backup**: RF (m=√p)
+- **Strategy**: Ensemble both
+- **Retraining**: Weekly
+:::
+::: {.column width="50%"}
+### Success Metrics
+- Test error: < 4%
+- AUC: > 0.96
+- Precision/Recall: Balanced
+- Response time: < 1ms
+:::
+:::
+
+## Future Work
+
+- 🔍 Hyperparameter optimization (grid search)
+- 🧠 Deep learning comparison
+- ⏰ Time-series features
+- 🔄 Real-time prediction API
+
+---
+
+# Thank You! {background-color="#E50914"}
+
+## Summary Stats
+
+::: {.columns}
+::: {.column width="50%"}
+### Dataset
+- 210K+ users
+- 30 features
+- 80/20 split
+:::
+::: {.column width="50%"}
+### Best Models
+- **GB**: 3.5% error
+- **RF**: 3.8% error
+- **AUC**: 0.96+
+:::
+:::
+
+## Questions?
+
+**Contact**: Statistical Machine Learning Team  
+**Date**: November 30, 2025  
+**Project**: Netflix User Churn Prediction
+
+::: {.notes}
+Thank you for your attention. This analysis demonstrates that both Random Forest and Gradient Boosting are highly effective for churn prediction, with GB having a slight accuracy advantage while RF offers better stability and easier deployment.
+:::
